@@ -7,3 +7,4 @@ float32 cmd_user
 float32 cmd_motor
 float32 measured_vel
 float32 measured_pos
+float32 measured_current

@@ -1,7 +1,12 @@
-SCRIPT_VER=8
+SCRIPT_VER=9
 
 MAX_CHANNELS=2 ' Two channels
 Dim last_mode[2] as Integer
+
+' Set Timer to send update @10Hz (100ms)
+SetTimerCount(1, 100)
+' Start the timer
+SetTimerState(1,0)
 
 ' Mode values are:
 '  -1 stopped
@@ -15,43 +20,41 @@ setcommand(_VAR, 1, -1)
 setconfig(_ECHOF, 1) ' Serial echo off (p284)
 
 top:
-	print("&f:", 1)
-	print(":", getvalue(_MOTCMD, 1))
-	print(":", getvalue(_MOTPWR, 1))
-	print(":", getvalue(_ABSPEED, 2))
-	print(":", getvalue(_RELCNTR, 2))
-	print("\r")
+	' If timer finished counting
+	if GetTimerState(0) = 1 then
+		SetTimerCount(0, 100)
+		SetTimerState(0,0)
 
-	print("&f:", 2)
-	print(":", getvalue(_MOTCMD, 2))
-	print(":", getvalue(_MOTPWR, 2))
-	print(":", getvalue(_ABSPEED, 1))
-	print(":", getvalue(_RELCNTR, 1))
-	print("\r")
-	
-	' Send status messages for the controller at 5Hz.
-	c++
-	if c = 10 then
-		GoSub PrintStatus
-		c = 0
+		' Print feedback for motor 1 (connected on encoder 2)
+		print("&f:", 1)
+		print(":", getvalue(_MOTCMD, 1))
+		print(":", getvalue(_MOTPWR, 1))
+		print(":", getvalue(_ABSPEED, 2))
+		print(":", getvalue(_ABCNTR, 2))
+		print(":", getvalue(_BATAMPS, 1))
+		print("\r")
+
+		' Print feedback for motor 2 (connected on encoder 1)
+		print("&f:", 2)
+		print(":", getvalue(_MOTCMD, 2))
+		print(":", getvalue(_MOTPWR, 2))
+		print(":", getvalue(_ABSPEED, 1))
+		print(":", getvalue(_ABCNTR, 1))
+		print(":", getvalue(_BATAMPS, 2))
+		print("\r")
+
+		' Print controller status
+		print("&s:", SCRIPT_VER)
+		print(":", getvalue(_FLTFLAG))
+		print(":", getvalue(_STFLAG))
+		print(":", getvalue(_VOLTS, 2))
+		print(":", getvalue(_TEMP, 1))
+		print(":", getconfig(_MXRPM, 1))
+		print(":", getconfig(_MXRPM, 2))
+		print(":", getvalue(_BATAMPS, 1))
+		print(":", getvalue(_BATAMPS, 2))
+		print(":", getvalue(_ABSPEED, 1))
+		print(":", getvalue(_ABSPEED, 2))
+		print("\r")
 	end if
-
-	wait(90)
 	goto top
-
-PrintFeedback:
-
-	Return
-	
-PrintStatus:
-	print("&s:", SCRIPT_VER)
-	print(":", getvalue(_FLTFLAG))
-	print(":", getvalue(_STFLAG))
-	print(":", getvalue(_VOLTS, 2))
-	print(":", getvalue(_TEMP, 1))
-	print(":", getconfig(_MXRPM, 1))
-	print(":", getconfig(_MXRPM, 2))
-	print(":", getvalue(_BATAMPS, 1))
-	print(":", getvalue(_BATAMPS, 2))
-	print("\r")
-	Return

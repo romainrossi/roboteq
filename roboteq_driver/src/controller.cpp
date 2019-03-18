@@ -43,7 +43,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Link to generated source from Microbasic script file.
 extern const char* script_lines[];
-extern const int script_ver = 8;
+extern const int script_ver = 9;
+const int Number_of_status_fields = 12;
+const int Number_of_feedback_fields = 7;
 
 namespace roboteq {
 
@@ -171,7 +173,7 @@ void Controller::processStatus(std::string str) {
       return;
     }
 
-    if (fields.size() != 10) {
+    if (fields.size() != Number_of_status_fields) {
       ROS_WARN("Wrong number of status fields. Dropping message.");
       return;
     }
@@ -184,6 +186,8 @@ void Controller::processStatus(std::string str) {
     msg.max_rpm_motor2 = boost::lexical_cast<int>(fields[7]);
     msg.bat_current_1 = boost::lexical_cast<double>(fields[8])/10;
     msg.bat_current_2 = boost::lexical_cast<double>(fields[9])/10;
+    msg.measured_rpm_1 = boost::lexical_cast<double>(fields[10]);
+    msg.measured_rpm_2 = boost::lexical_cast<double>(fields[11]);
 
   } catch (std::bad_cast& e) {
     ROS_WARN("Failure parsing status data. Dropping message.");
@@ -200,7 +204,7 @@ void Controller::processStatus(std::string str) {
 void Controller::processFeedback(std::string msg) {
   std::vector<std::string> fields;
   boost::split(fields, msg, boost::algorithm::is_any_of(":"));
-  if (fields.size() != 6) {
+  if (fields.size() != Number_of_feedback_fields) {
     ROS_WARN("Wrong number of feedback fields. Dropping message.");
     return;
   }

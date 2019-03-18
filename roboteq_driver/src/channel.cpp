@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace roboteq {
 
 Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation, double gearbox_divider, float max_acceleration, float max_deceleration) :
-  channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3000), max_acceleration_(max_acceleration), max_deceleration_(max_deceleration), 
+  channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3000), max_acceleration_(max_acceleration), max_deceleration_(max_deceleration),
   ticks_per_rotation_(ticks_per_rotation), gearbox_divider_(gearbox_divider)
 {
   sub_cmd_ = nh_.subscribe("cmd", 1, &Channel::cmdCallback, this);
@@ -125,6 +125,7 @@ void Channel::feedbackCallback(std::vector<std::string> fields)
     msg.cmd_motor = boost::lexical_cast<float>(fields[3]) / 1000.0;
     msg.measured_vel = from_rpm(boost::lexical_cast<double>(fields[4]));
     msg.measured_pos = from_encoder_ticks(boost::lexical_cast<double>(fields[5]));
+    msg.measured_current = boost::lexical_cast<float>(fields[6])/10;
   }
   catch (std::bad_cast& e)
   {

@@ -31,3 +31,6 @@ int32 max_rpm_motor2
 
 float32 bat_current_1
 float32 bat_current_2
+
+float32 measured_rpm_1
+float32 measured_rpm_2
